@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceFlow — Gestor Financeiro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">₿</div>
+      <span class="brand-name">FinanceFlow</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="dashboard" onclick="showSection('dashboard', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Painel</span>
+      </button>
+      <button class="nav-item" data-section="nova-conta" onclick="showSection('nova-conta', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Nova Conta</span>
+      </button>
+      <button class="nav-item" data-section="contas" onclick="showSection('contas', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>Contas</span>
+      </button>
+      <button class="nav-item" data-section="relatorio" onclick="showSection('relatorio', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Relatório</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-theme">
+      <label>Aparência</label>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-toggle-track">
+          <span class="theme-toggle-thumb"></span>
+        </span>
+        <span class="theme-toggle-label" id="theme-label">🌙 Modo Escuro</span>
+      </button>
+    </div>
+
+    <div class="sidebar-month">
+      <label>Período</label>
+      <select id="mes-select" onchange="onMesChange()">
+        <option value="0">Janeiro</option>
+        <option value="1">Fevereiro</option>
+        <option value="2">Março</option>
+        <option value="3">Abril</option>
+        <option value="4">Maio</option>
+        <option value="5">Junho</option>
+        <option value="6">Julho</option>
+        <option value="7">Agosto</option>
+        <option value="8">Setembro</option>
+        <option value="9">Outubro</option>
+        <option value="10">Novembro</option>
+        <option value="11">Dezembro</option>
+      </select>
+      <select id="ano-select" onchange="onMesChange()"></select>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <header class="mobile-topbar">
+    <button class="hamburger" onclick="toggleSidebar()" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-brand">FinanceFlow</div>
+    <div class="mobile-period" id="mobile-period-label"></div>
+  </header>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main">
+
+    <!-- DASHBOARD -->
+    <section class="section active" id="section-dashboard">
+      <div class="section-header">
+        <h1>Painel <span id="dashboard-period-label"></span></h1>
+        <p class="subtitle">Visão geral das suas finanças</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card card--total">
+          <div class="card-label">Total de Gastos</div>
+          <div class="card-value" id="card-total">R$ 0,00</div>
+          <div class="card-sub" id="card-count">0 contas</div>
+        </div>
+        <div class="card card--paid">
+          <div class="card-label">Pago</div>
+          <div class="card-value" id="card-paid">R$ 0,00</div>
+          <div class="card-sub" id="card-paid-count">0 pagas</div>
+        </div>
+        <div class="card card--pending">
+          <div class="card-label">A Pagar</div>
+          <div class="card-value" id="card-pending">R$ 0,00</div>
+          <div class="card-sub" id="card-pending-count">0 a pagar</div>
+        </div>
+
+      </div>
+
+      <div class="dashboard-bottom">
+        <div class="chart-block" style="grid-column:1/-1">
+          <h2>Resumo por Status</h2>
+          <div class="status-summary" id="status-summary"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOVA CONTA -->
+    <section class="section" id="section-nova-conta">
+      <div class="section-header">
+        <h1>Nova Conta</h1>
+        <p class="subtitle">Adicione uma nova despesa ao seu controle</p>
+      </div>
+
+      <div class="form-card">
+        <form id="form-conta" onsubmit="submitConta(event)">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Descrição da Conta</label>
+              <input type="text" id="f-descricao" placeholder="Ex: Conta de luz, Aluguel, Netflix..." required />
+            </div>
+
+            <div class="form-group">
+              <label>Valor (R$)</label>
+              <input type="text" id="f-valor" placeholder="0,00" oninput="formatValor(this)" required />
+            </div>
+
+            <div class="form-group">
+              <label>Status</label>
+              <select id="f-status">
+                <option value="pendente">🔴 A Pagar</option>
+                <option value="pago">✅ Pago</option>
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label>Observações (opcional)</label>
+              <textarea id="f-obs" placeholder="Adicione detalhes sobre esta conta..." rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="limparForm()">Limpar</button>
+            <button type="submit" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Salvar Conta
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- CONTAS -->
+    <section class="section" id="section-contas">
+      <div class="section-header">
+        <h1>Contas <span id="contas-period-label"></span></h1>
+        <p class="subtitle">Gerencie todas as suas despesas</p>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" class="search-input" placeholder="🔍 Buscar conta..." oninput="renderContas()" id="search-input" />
+        <select class="filter-select" onchange="renderContas()" id="filter-status">
+          <option value="">Todos os status</option>
+          <option value="pendente">A Pagar</option>
+          <option value="pago">Pago</option>
+        </select>
+      </div>
+
+      <div class="contas-list" id="contas-list">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>Nenhuma conta registrada ainda.</p>
+          <button class="btn-primary" onclick="showSection('nova-conta', null)">Adicionar Conta</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATÓRIO -->
+    <section class="section" id="section-relatorio">
+      <div class="section-header">
+        <h1>Relatório Mensal</h1>
+        <p class="subtitle" id="relatorio-subtitle">Resumo detalhado do período</p>
+      </div>
+
+      <div class="relatorio-summary">
+        <div class="rel-stat">
+          <span class="rel-stat-label">Total do Mês</span>
+          <span class="rel-stat-value accent" id="rel-total">R$ 0,00</span>
+        </div>
+        <div class="rel-divider"></div>
+        <div class="rel-stat">
+          <span class="rel-stat-label">Qtd. de Contas</span>
+          <span class="rel-stat-value" id="rel-qtd">0</span>
+        </div>
+        <div class="rel-divider"></div>
+        <div class="rel-stat">
+          <span class="rel-stat-label">Maior Gasto</span>
+          <span class="rel-stat-value" id="rel-maior">—</span>
+        </div>
+        <div class="rel-divider"></div>
+        <div class="rel-stat">
+          <span class="rel-stat-label">Ticket Médio</span>
+          <span class="rel-stat-value" id="rel-media">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="relatorio-body">
+        <div class="relatorio-status-block" style="grid-column:1/-1">
+          <h2>Por Status</h2>
+          <div class="status-bars" id="status-bars"></div>
+        </div>
+      </div>
+
+      <div class="relatorio-all-block">
+        <h2>Todas as Contas do Mês</h2>
+        <div id="rel-all-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL EDITAR/VER -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">Editar Conta</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
