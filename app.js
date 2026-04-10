@@ -15,6 +15,9 @@ let mesAtual = new Date().getMonth();
 let anoAtual = new Date().getFullYear();
 let editingId = null;
 
+// 🎯 GRÁFICO
+let chartStatus = null;
+
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ─── INIT ──────────────────────────────────────────────────
@@ -133,22 +136,16 @@ function submitConta(e) {
   const valor = parseValor(valorStr);
   if (!valor || valor <= 0) return showToast('Valor inválido.', 'error');
 
-  if (editingId) {
-    const idx = contas.findIndex(c => c.id === editingId);
-    if (idx > -1) contas[idx] = { ...contas[idx], descricao, valor, status, obs };
-    editingId = null;
-  } else {
-    contas.push({
-      id: genId(),
-      descricao,
-      valor,
-      status,
-      obs,
-      mes: mesAtual,
-      ano: anoAtual,
-      criadoEm: new Date().toISOString()
-    });
-  }
+  contas.push({
+    id: genId(),
+    descricao,
+    valor,
+    status,
+    obs,
+    mes: mesAtual,
+    ano: anoAtual,
+    criadoEm: new Date().toISOString()
+  });
 
   saveTo();
   limparForm();
@@ -157,7 +154,7 @@ function submitConta(e) {
   showToast('Salvo com sucesso!', 'success');
 }
 
-// ─── DASHBOARD (CORRIGIDO) ────────────────────────────────
+// ─── DASHBOARD COM GRÁFICO ────────────────────────────────
 function renderDashboard() {
   const items = getContasMes();
 
@@ -167,27 +164,42 @@ function renderDashboard() {
   const paidVal = paid.reduce((s, c) => s + c.valor, 0);
   const pendVal = pending.reduce((s, c) => s + c.valor, 0);
 
-  // ✅ NOVO TOTAL
   const total = paidVal - pendVal;
 
   setText('card-total', fmtMoeda(total));
-  setText('card-count', items.length + ' conta' + (items.length !== 1 ? 's' : ''));
+  setText('card-count', items.length + ' contas');
   setText('card-paid', fmtMoeda(paidVal));
   setText('card-pending', fmtMoeda(pendVal));
 
-  const el = document.getElementById('status-summary');
-  if (!items.length) {
-    el.innerHTML = '<div class="empty-state-mini">Nenhuma conta</div>';
-    return;
+  // 🎯 GRÁFICO
+  const ctx = document.getElementById('grafico-status');
+
+  if (ctx) {
+    if (chartStatus) chartStatus.destroy();
+
+    chartStatus = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pago', 'Pendente'],
+        datasets: [{
+          data: [paidVal, pendVal],
+          backgroundColor: ['#22c55e', '#ef4444'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            labels: {
+              color: '#aaa'
+            }
+          }
+        },
+        cutout: '65%',
+        responsive: true
+      }
+    });
   }
-
-  const totalReal = paidVal + pendVal;
-  const paidPct = totalReal ? Math.round((paidVal / totalReal) * 100) : 0;
-  const pendPct = totalReal ? Math.round((pendVal / totalReal) * 100) : 0;
-
-  el.innerHTML =
-    `<div>Pago ${paidPct}%</div>
-     <div>Pendente ${pendPct}%</div>`;
 }
 
 // ─── CONTAS ───────────────────────────────────────────────
