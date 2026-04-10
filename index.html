@@ -67,6 +67,8 @@
     </div>
   </aside>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- MOBILE TOPBAR -->
   <header class="mobile-topbar">
     <button class="hamburger" onclick="toggleSidebar()" id="hamburger">
@@ -110,9 +112,9 @@
 
       <div class="dashboard-bottom">
         <div class="chart-block" style="grid-column:1/-1">
-          <h2>Resumo por Status</h2>
-          <div class="status-summary" id="status-summary"></div>
-        </div>
+  <h2>Resumo Financeiro</h2>
+  <canvas id="grafico-status" height="100"></canvas>
+</div>
       </div>
     </section>
 
